@@ -24,7 +24,7 @@ const raquetteY = balleY + 20;
 const raquetteX = balleX - 50;
 ctx.beginPath();
 ctx.moveTo(raquetteX, raquetteY);
-ctx.lineTo(raquetteX + raquetteWidth, raquetteY);
+const raquette = ctx.lineTo(raquetteX + raquetteWidth, raquetteY);
 ctx.strokeStyle = 'white';
 ctx.lineWidth = 10;
 ctx.stroke();
@@ -52,7 +52,22 @@ newGameButton.addEventListener('click', () => {
     }
 })
 
-
 // Pour gérer les déplacements dans le canvas
 // request animation frame
 // cancel animation frame
+const leftButton = document.getElementById('leftArrow');
+const rightButton = document.getElementById('rightArrow');
+
+function raquetteMove(timestamp){
+    leftButton.addEventListener('click', () => {
+        raquetteX--;
+        raquette.style.left = raquetteX + "px";
+        requestAnimationFrame(raquetteMove)
+    })
+    rightButton.addEventListener('click', () => {
+        raquetteX++;
+
+        requestAnimationFrame(raquetteMove);
+    })
+}
+
