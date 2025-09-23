@@ -29,3 +29,30 @@ ctx.strokeStyle = 'white';
 ctx.lineWidth = 10;
 ctx.stroke();
 ctx.closePath();
+
+
+const newGameButton = document.getElementById('newGame');
+const scoreDisplay = document.getElementById('score');
+let temps = 0;
+let nbGame = 0;
+
+//Button newGame
+function timer(){
+    scoreDisplay.innerHTML = `Score : ${temps} s`
+    temps++;
+}
+
+newGameButton.addEventListener('click', () => {
+    if ( nbGame === 0){
+        setInterval(timer,1000);
+        nbGame++;
+    } else {
+        temps = 0;
+        nbGame++;
+    }
+})
+
+
+// Pour gérer les déplacements dans le canvas
+// request animation frame
+// cancel animation frame
