@@ -1,24 +1,6 @@
 const game = document.getElementById("game");
 const ctx = game.getContext('2d');
 
-//Plateau de jeu
-// ctx.fillStyle = 'black';
-// ctx.fillRect(0,0,game.width,game.height);
-// ctx.strokeStyle = 'white';
-// ctx.lineWidth = 5;
-// ctx.strokeRect(0,0,game.width,game.height);
-
-//Coordonnées Balle
-const balleX = game.width / 2;
-const balleY = game.height - 50;
-const balleRadius = 10;
-
-//Coordonnées Raquette
-const raquetteWidth = 100;
-const raquetteHeight = 10;
-const raquetteY = game.height - 20;
-let raquetteX = game.width/2 - 50;
-let speed = 10;
 // ctx.beginPath();
 // ctx.moveTo(raquetteX, raquetteY);
 // ctx.lineTo(raquetteX + raquetteWidth, raquetteY);
@@ -27,26 +9,31 @@ let speed = 10;
 // ctx.stroke();
 // ctx.closePath();
 
-// Pour gérer les déplacements dans le canvas
-// request animation frame
-// cancel animation frame
-const leftButton = document.getElementById('leftArrow');
-const rightButton = document.getElementById('rightArrow');
-
-function afficher(){
-    ctx.clearRect(0,0,game.width,game.height);
-
-    //Raquette
-    ctx.fillStyle = "white";
-    ctx.fillRect(raquetteX,raquetteY, raquetteWidth,raquetteHeight);
-
-    //Plateau de jeu
+function dessinePlateau(){
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 5;
     ctx.strokeRect(0,0,game.width,game.height);
+}
 
-    //Balle
+//Coordonnées Raquette
+const raquetteWidth = 100;
+const raquetteHeight = 10;
+const raquetteY = game.height - 25;
+let raquetteX = game.width/2 - 50;
+let raquetteSpeed = 10;
+
+function dessineRaquette(){
+    ctx.fillStyle = "white";
+    ctx.fillRect(raquetteX,raquetteY, raquetteWidth,raquetteHeight);
+}
+
+//Coordonnées Balle
+const balleX = game.width / 2;
+const balleY = game.height - 50;
+const balleRadius = 10;
+
+function dessineBalle(){
     ctx.beginPath();
     ctx.arc(balleX, balleY, balleRadius, 0, 2 * Math.PI);
     ctx.fillStyle = 'white';
@@ -54,30 +41,46 @@ function afficher(){
     ctx.closePath();
 }
 
-afficher();
+
+function afficherJeu(){
+    ctx.clearRect(0,0,game.width,game.height);
+    dessineRaquette();
+    dessinePlateau();
+    dessineBalle()
+}
+
+afficherJeu();
 
 document.addEventListener("keydown", (e) => {
     switch (e.key){
         case "ArrowLeft":
             if (raquetteX > 0){
-                raquetteX -= speed;
+                raquetteX -= raquetteSpeed;
             }
             break;
 
         case "ArrowRight":
             if (raquetteX + raquetteWidth < game.width){
-                 raquetteX += speed;
+                 raquetteX += raquetteSpeed;
             }
             break;
 
         default:
             break;
     }
-    afficher();
+    afficherJeu();
 });
 
 
 //Mouvement de la balle
+// Pour gérer les déplacements dans le canvas
+// request animation frame
+// cancel animation frame
+function moveBall(){
+
+}
+
+moveBall();
 
 
 
@@ -105,3 +108,7 @@ newGameButton.addEventListener('click', () => {
 
 
 
+// Trucs a rajouter :
+// - Bordure arrondis plateau + raquette
+// - lissage déplacement ( + fluide )
+// - fonctionnalités à faire 
