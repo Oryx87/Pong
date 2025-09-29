@@ -80,32 +80,6 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "ArrowRight") rightPressed = false;
 })
 
-// Touch
-
-game.addEventListener("touchstart", handleTouch, { passive: true });
-game.addEventListener("touchmove",  handleTouch, { passive: true });
-game.addEventListener("touchend",   stopTouch,   { passive: true });
-
-function handleTouch(e) {
-    const rect = game.getBoundingClientRect();
-    const touchX = e.touches[0].clientX - rect.left;
-
-    if (touchX < game.width / 2) {
-        leftPressed  = true;
-        rightPressed = false;
-    } else {
-        rightPressed = true;
-        leftPressed  = false;
-    }
-}
-
-function stopTouch() {
-    leftPressed  = false;
-    rightPressed = false;
-}
-
-
-//
 
 function randomDeplacement(balleSpeed){
     const angle = (Math.random() * (150 - 30) + 30) * Math.PI / 180;
