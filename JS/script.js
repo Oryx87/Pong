@@ -13,7 +13,7 @@ const raquetteWidth = 100;
 const raquetteHeight = 10;
 const raquetteY = game.height - 25;
 let raquetteX = game.width/2 - 50;
-let raquetteSpeed = 20;
+let raquetteSpeed = 4;
 
 function dessineRaquette(){
     ctx.fillStyle = "white";
@@ -43,25 +43,69 @@ function afficherJeu(){
 
 afficherJeu();
 
+
+// Déplacement raquette : ( Version pas fluide )
+// document.addEventListener("keydown", (e) => {
+//     switch (e.key){
+//         case "ArrowLeft":
+//             if (raquetteX > 0){
+//                 raquetteX -= raquetteSpeed;
+//             }
+//             break;
+
+//         case "ArrowRight":
+//             if (raquetteX + raquetteWidth < game.width){
+//                  raquetteX += raquetteSpeed;
+//             }
+//             break;
+
+//         default:
+//             break;
+//     }
+//     afficherJeu();
+// });
+
+// Déplacements version fluide + dans moveBalle :
+
+let leftPressed = false;
+let rightPressed = false;
+
 document.addEventListener("keydown", (e) => {
-    switch (e.key){
-        case "ArrowLeft":
-            if (raquetteX > 0){
-                raquetteX -= raquetteSpeed;
-            }
-            break;
+    if (e.key === "ArrowLeft") leftPressed = true;
+    if (e.key === "ArrowRight") rightPressed = true;
+})
 
-        case "ArrowRight":
-            if (raquetteX + raquetteWidth < game.width){
-                 raquetteX += raquetteSpeed;
-            }
-            break;
+document.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft") leftPressed = false;
+    if (e.key === "ArrowRight") rightPressed = false;
+})
 
-        default:
-            break;
+// Touch
+
+game.addEventListener("touchstart", handleTouch, { passive: true });
+game.addEventListener("touchmove",  handleTouch, { passive: true });
+game.addEventListener("touchend",   stopTouch,   { passive: true });
+
+function handleTouch(e) {
+    const rect = game.getBoundingClientRect();
+    const touchX = e.touches[0].clientX - rect.left;
+
+    if (touchX < game.width / 2) {
+        leftPressed  = true;
+        rightPressed = false;
+    } else {
+        rightPressed = true;
+        leftPressed  = false;
     }
-    afficherJeu();
-});
+}
+
+function stopTouch() {
+    leftPressed  = false;
+    rightPressed = false;
+}
+
+
+//
 
 function randomDeplacement(balleSpeed){
     const angle = (Math.random() * (150 - 30) + 30) * Math.PI / 180;
@@ -76,8 +120,19 @@ let balleYSpeed;
 let rafID;
 const result = document.getElementById('resultat');
 let temps = 0;
+let baseSpeed = 3;
+let speedMultiplier = 1;
+const maxMultiplier = 5;
 
 function moveBalle(timestamp){
+
+    if (leftPressed && raquetteX > 0){
+        raquetteX -= raquetteSpeed;
+    }
+    if (rightPressed && raquetteX + raquetteWidth < game.width){
+        raquetteX += raquetteSpeed;
+    }
+
     balleX += balleXSpeed;
     balleY += balleYSpeed;
 
@@ -91,9 +146,21 @@ function moveBalle(timestamp){
         balleYSpeed = -balleYSpeed;
     }
 
-    //Collision Raquette
+    //Collision Raquette avec condition 90°
     if ( balleX + balleRadius > raquetteX && balleY + balleRadius >= raquetteY && balleX - balleRadius < raquetteX + raquetteWidth && balleY - balleRadius <= raquetteY + raquetteHeight){
-        balleYSpeed = -balleYSpeed;
+        
+        const raquetteCentre = raquetteX + raquetteWidth/2;
+        const dist = (balleX - raquetteCentre) / (raquetteWidth / 2);
+
+        const maxAngle = 60 * Math.PI / 180;
+        const angle = dist * maxAngle;
+
+        speedMultiplier = Math.min(speedMultiplier + 0.2, maxMultiplier);
+        const speed = baseSpeed * speedMultiplier;
+
+        balleXSpeed = speed * Math.sin(angle);
+        balleYSpeed = -speed * Math.cos(angle);
+
         balleY = raquetteY - balleRadius;
     }
 
@@ -127,15 +194,19 @@ function startTimer() {
 
 newGameButton.addEventListener('click', () => {
     if ( nbGame === 0){
+
         const direction = randomDeplacement(3);
         balleXSpeed = direction.x;
         balleYSpeed = direction.y;
+        raquetteX = game.width/2 - 50;
         startTimer();
         nbGame++;
         rafID = requestAnimationFrame(moveBalle);
     } else {
         cancelAnimationFrame(rafID);
         clearInterval(timerID);
+
+        speedMultiplier = 1;
 
         balleX = game.width / 2;
         balleY = game.height - 50;
@@ -154,14 +225,3 @@ newGameButton.addEventListener('click', () => {
     }
 })
 
-
-
-// Trucs a rajouter :
-// - Bordure arrondis plateau + raquette
-// - lissage déplacement ( + fluide )
-//Fonctionnalités à faire :
-// - commandes touch
-// - vitesse balle augmente progressivement (max x5)
-// - déplacement peut pas etre vertical ( 90° raquette)
-// - stocker meilleur score
-// +Bonus...
