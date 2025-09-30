@@ -80,6 +80,28 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "ArrowRight") rightPressed = false;
 })
 
+// Touch :
+const leftArrow = document.getElementById("leftArrow");
+const rightArrow = document.getElementById("rightArrow");
+
+leftArrow.addEventListener("touchstart", (e)=>{
+    leftPressed = true;
+})
+
+leftArrow.addEventListener("touchend", (e) =>{
+    leftPressed = false;
+})
+
+rightArrow.addEventListener("touchstart", (e)=>{
+    rightPressed = true;
+})
+
+rightArrow.addEventListener("touchend", (e) =>{
+    rightPressed = false;
+})
+
+//
+
 
 function randomDeplacement(balleSpeed){
     const angle = (Math.random() * (150 - 30) + 30) * Math.PI / 180;
